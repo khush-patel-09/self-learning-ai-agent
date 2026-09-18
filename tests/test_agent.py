@@ -27,3 +27,14 @@ def test_agent_passes_conversation_to_llm():
     agent.run(task, conversation)
 
     assert llm.last_prompt == "My name is Khush.\nWhat is my name?"
+
+def test_agent_adds_response_to_conversation():
+    llm = FakeLLM("4")
+    agent = Agent(llm)
+
+    conversation = Conversation()
+    task = Task("Calculate 2 + 2")
+
+    agent.run(task, conversation)
+
+    assert conversation.messages == ["4"]

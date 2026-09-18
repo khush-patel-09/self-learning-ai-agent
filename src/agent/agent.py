@@ -13,4 +13,8 @@ class Agent:
         """Process a task using the conversation context."""
         prompt = "\n".join(conversation.messages + [task.description])
 
-        return self.llm.generate(prompt)
+        response = self.llm.generate(prompt)
+
+        conversation.add(response)
+
+        return response
