@@ -1,3 +1,4 @@
+from agent.conversation import Conversation
 from agent.llm.base import LLM
 from agent.task import Task
 
@@ -8,6 +9,8 @@ class Agent:
     def __init__(self, llm: LLM):
         self.llm = llm
 
-    def run(self, task: Task) -> str:
-        """Process a task using the configured language model."""
-        return self.llm.generate(task.description)
+    def run(self, task: Task, conversation: Conversation) -> str:
+        """Process a task using the conversation context."""
+        prompt = "\n".join(conversation.messages + [task.description])
+
+        return self.llm.generate(prompt)
