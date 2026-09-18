@@ -20,13 +20,14 @@ def test_agent_passes_conversation_to_llm():
     agent = Agent(llm)
 
     conversation = Conversation()
-    conversation.add("My name is Khush.")
+    conversation.add("user", "My name is Khush.")
 
     task = Task("What is my name?")
 
     agent.run(task, conversation)
 
     assert llm.last_prompt == "My name is Khush.\nWhat is my name?"
+
 
 def test_agent_adds_response_to_conversation():
     llm = FakeLLM("4")
@@ -37,4 +38,6 @@ def test_agent_adds_response_to_conversation():
 
     agent.run(task, conversation)
 
-    assert conversation.messages == ["4"]
+    assert len(conversation.messages) == 1
+    assert conversation.messages[0].role == "assistant"
+    assert conversation.messages[0].content == "4"
