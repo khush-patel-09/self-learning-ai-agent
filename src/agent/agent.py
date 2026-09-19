@@ -12,8 +12,8 @@ class Agent:
     def run(self, task: Task, conversation: Conversation) -> str:
         """Process a task using the conversation context."""
         prompt = "\n".join(
-            [message.content for message in conversation.messages]
-            + [task.description]
+            [f"{message.role}: {message.content}" for message in conversation.messages]
+            + [f"user: {task.description}"]
         )
 
         response = self.llm.generate(prompt)
