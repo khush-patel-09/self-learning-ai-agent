@@ -7,9 +7,9 @@ from agent.task import Task
 class Agent:
     """Core agent responsible for processing tasks."""
 
-    def __init__(self, llm: LLM):
+    def __init__(self, llm: LLM, context_builder: ContextBuilder):
         self.llm = llm
-        self.context_builder = ContextBuilder()
+        self.context_builder = context_builder
 
     def run(self, task: Task, conversation: Conversation) -> str:
         """Process a task using the conversation context."""

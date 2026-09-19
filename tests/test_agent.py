@@ -2,11 +2,12 @@ from agent.agent import Agent
 from agent.conversation import Conversation
 from agent.llm.fake import FakeLLM
 from agent.task import Task
+from agent.context.builder import ContextBuilder
 
 
 def test_agent_runs_task_using_llm():
     llm = FakeLLM("4")
-    agent = Agent(llm)
+    agent = Agent(llm, ContextBuilder())
     task = Task("Calculate 2 + 2")
     conversation = Conversation()
 
@@ -17,7 +18,7 @@ def test_agent_runs_task_using_llm():
 
 def test_agent_passes_conversation_to_llm():
     llm = FakeLLM("response")
-    agent = Agent(llm)
+    agent = Agent(llm, ContextBuilder())
 
     conversation = Conversation()
     conversation.add("user", "My name is Khush.")
@@ -34,7 +35,7 @@ def test_agent_passes_conversation_to_llm():
 
 def test_agent_adds_response_to_conversation():
     llm = FakeLLM("4")
-    agent = Agent(llm)
+    agent = Agent(llm, ContextBuilder())
 
     conversation = Conversation()
     task = Task("Calculate 2 + 2")
