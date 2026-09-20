@@ -19,6 +19,7 @@ def test_agent_runs_task_using_llm():
     assert result.response == "4"
     assert result.action.name == "respond"
     assert result.action.input == "4"
+    assert result.observation.content == "4"
 
 
 def test_agent_passes_conversation_to_llm():

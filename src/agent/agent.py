@@ -4,6 +4,7 @@ from agent.conversation import Conversation
 from agent.llm.base import LLM
 from agent.result import AgentResult
 from agent.task import Task
+from agent.observation import Observation
 
 
 class Agent:
@@ -22,5 +23,6 @@ class Agent:
         conversation.add("assistant", response)
 
         action = Action("respond", response)
+        observation = Observation(response)
 
-        return AgentResult(response, action)
+        return AgentResult(response, action, observation)
