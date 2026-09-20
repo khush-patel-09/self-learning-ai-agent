@@ -1,6 +1,7 @@
 from agent.context.builder import ContextBuilder
 from agent.conversation import Conversation
 from agent.llm.base import LLM
+from agent.result import AgentResult
 from agent.task import Task
 
 
@@ -11,7 +12,7 @@ class Agent:
         self.llm = llm
         self.context_builder = context_builder
 
-    def run(self, task: Task, conversation: Conversation) -> str:
+    def run(self, task: Task, conversation: Conversation) -> AgentResult:
         """Process a task using the conversation context."""
         prompt = self.context_builder.build(task, conversation)
 
@@ -19,4 +20,4 @@ class Agent:
 
         conversation.add("assistant", response)
 
-        return response
+        return AgentResult(response)

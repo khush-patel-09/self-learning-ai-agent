@@ -1,8 +1,10 @@
+from agent import result
 from agent.agent import Agent
 from agent.conversation import Conversation
 from agent.llm.fake import FakeLLM
 from agent.task import Task
 from agent.context.builder import ContextBuilder
+from agent.result import AgentResult
 
 
 def test_agent_runs_task_using_llm():
@@ -13,7 +15,8 @@ def test_agent_runs_task_using_llm():
 
     result = agent.run(task, conversation)
 
-    assert result == "4"
+    assert isinstance(result, AgentResult)
+    assert result.response == "4"
 
 
 def test_agent_passes_conversation_to_llm():
