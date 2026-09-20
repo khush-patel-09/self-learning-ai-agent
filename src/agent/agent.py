@@ -1,3 +1,4 @@
+from agent.action import Action
 from agent.context.builder import ContextBuilder
 from agent.conversation import Conversation
 from agent.llm.base import LLM
@@ -20,4 +21,6 @@ class Agent:
 
         conversation.add("assistant", response)
 
-        return AgentResult(response)
+        action = Action("respond", response)
+
+        return AgentResult(response, action)

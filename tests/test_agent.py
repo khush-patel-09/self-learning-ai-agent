@@ -17,6 +17,8 @@ def test_agent_runs_task_using_llm():
 
     assert isinstance(result, AgentResult)
     assert result.response == "4"
+    assert result.action.name == "respond"
+    assert result.action.input == "4"
 
 
 def test_agent_passes_conversation_to_llm():
