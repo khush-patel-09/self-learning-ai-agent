@@ -6,6 +6,7 @@ from agent.memory.store import MemoryStore
 from agent.observation import Observation
 from agent.result import AgentResult
 from agent.task import Task
+from agent.memory.memory import Memory
 
 
 class Agent:
@@ -37,3 +38,8 @@ class Agent:
         observation = Observation(response)
 
         return AgentResult(response, action, observation)
+
+    def remember(self, content: str) -> None:
+        """Store a memory when memory storage is configured."""
+        if self.memory_store is not None:
+            self.memory_store.add(Memory(content))

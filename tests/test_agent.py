@@ -69,3 +69,17 @@ def test_agent_uses_memory_store():
     agent.run(task, conversation)
 
     assert "The user prefers concise explanations." in llm.last_prompt
+
+def test_agent_can_store_memory():
+    llm = FakeLLM("4")
+    context_builder = ContextBuilder()
+    memory_store = InMemoryStore()
+
+    agent = Agent(llm, context_builder, memory_store)
+
+    agent.remember("The user prefers concise explanations.")
+
+    memories = memory_store.get_all()
+
+    assert len(memories) == 1
+    assert memories[0].content == "The user prefers concise explanations."
