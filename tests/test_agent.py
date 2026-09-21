@@ -5,6 +5,8 @@ from agent.llm.fake import FakeLLM
 from agent.task import Task
 from agent.context.builder import ContextBuilder
 from agent.result import AgentResult
+from agent.memory.in_memory import InMemoryStore
+from agent.memory.memory import Memory
 
 
 def test_agent_runs_task_using_llm():
@@ -51,3 +53,19 @@ def test_agent_adds_response_to_conversation():
     assert len(conversation.messages) == 1
     assert conversation.messages[0].role == "assistant"
     assert conversation.messages[0].content == "4"
+
+def test_agent_uses_memory_store():
+    llm = FakeLLM("4")
+    context_builder = ContextBuilder()
+    memory_store = InMemoryStore()
+
+    memory_store.add(Memory("The user prefers concise explanations."))
+
+    agent = Agent(llm, context_builder, memory_store)
+
+    task = Task("Give a concise explanation.")
+    conversation = Conversation()
+
+    agent.run(task, conversation)
+
+    assert "The user prefers concise explanations." in llm.last_prompt

@@ -2,6 +2,7 @@ from agent.agent import Agent
 from agent.config import Config
 from agent.context.builder import ContextBuilder
 from agent.llm.ollama import OllamaLLM
+from agent.memory.in_memory import InMemoryStore
 
 
 def create_agent(config: Config) -> Agent:
@@ -11,4 +12,8 @@ def create_agent(config: Config) -> Agent:
     else:
         raise ValueError(f"Unsupported LLM provider: {config.llm_provider}")
 
-    return Agent(llm, ContextBuilder())
+    return Agent(
+        llm,
+        ContextBuilder(),
+        InMemoryStore(),
+    )
