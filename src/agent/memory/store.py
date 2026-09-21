@@ -15,3 +15,8 @@ class MemoryStore(ABC):
     def get_all(self) -> list[Memory]:
         """Return all stored memories."""
         raise NotImplementedError
+
+    @abstractmethod
+    def search(self, query: str) -> list[Memory]:
+        """Return memories relevant to a query."""
+        raise NotImplementedError

@@ -12,3 +12,17 @@ def test_in_memory_store_adds_and_returns_memories():
 
     assert len(memories) == 1
     assert memories[0] is memory
+
+
+def test_in_memory_store_searches_memories():
+    store = InMemoryStore()
+
+    relevant = Memory("The user prefers concise explanations.")
+    unrelated = Memory("The user enjoys playing cricket.")
+
+    store.add(relevant)
+    store.add(unrelated)
+
+    memories = store.search("concise explanations")
+
+    assert memories == [relevant]
