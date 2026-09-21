@@ -16,14 +16,9 @@ The agent should be able to:
 6. Retrieve relevant past experiences
 7. Improve its behavior on future tasks
 
-## Development Philosophy
-
-This project is intentionally built incrementally.
-
-Each feature should be introduced through small, focused commits so that the evolution of the system remains understandable.
-
 The project will prioritize understanding the underlying mechanisms over relying on high-level agent frameworks.
 
 ## Status
 
 Phase 0 — Project initialization
+Phase 1 - 
