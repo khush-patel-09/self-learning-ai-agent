@@ -10,7 +10,7 @@ class InMemoryStore(MemoryStore):
     def __init__(
         self,
         embedding_model: EmbeddingModel | None = None,
-        similarity_threshold: float = 0.5,
+        similarity_threshold: float = 0.3,
     ):
         self.memories: list[Memory] = []
         self.embedding_model = embedding_model

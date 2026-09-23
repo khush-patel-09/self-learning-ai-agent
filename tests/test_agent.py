@@ -7,6 +7,8 @@ from agent.context.builder import ContextBuilder
 from agent.result import AgentResult
 from agent.memory.in_memory import InMemoryStore
 from agent.memory.memory import Memory
+from agent.memory.local_embeddings import LocalEmbeddingModel
+from agent.memory.similarity import cosine_similarity
 
 
 def test_agent_runs_task_using_llm():
@@ -83,3 +85,26 @@ def test_agent_can_store_memory():
 
     assert len(memories) == 1
     assert memories[0].content == "The user prefers concise explanations."
+
+def test_agent_includes_semantically_relevant_memory():
+    llm = FakeLLM("4")
+    context_builder = ContextBuilder()
+    embedding_model = LocalEmbeddingModel()
+
+    memory_store = InMemoryStore(
+        embedding_model,
+        similarity_threshold=0.3,
+    )
+
+    memory_store.add(
+        Memory("The user prefers concise explanations.")
+    )
+
+    agent = Agent(llm, context_builder, memory_store)
+
+    task = Task("Please keep the explanation concise.")
+    conversation = Conversation()
+
+    agent.run(task, conversation)
+
+    assert "The user prefers concise explanations." in llm.last_prompt
