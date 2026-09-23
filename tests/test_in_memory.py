@@ -48,3 +48,20 @@ def test_in_memory_store_searches_semantically():
     memories = store.search("Keep the answer short.")
 
     assert memories[0] is relevant
+
+def test_in_memory_store_filters_low_similarity_memories():
+    embedding_model = FakeEmbeddingModel()
+    store = InMemoryStore(
+        embedding_model,
+        similarity_threshold=0.9,
+    )
+
+    relevant = Memory("The user prefers concise explanations.")
+    unrelated = Memory("The user enjoys playing cricket.")
+
+    store.add(relevant)
+    store.add(unrelated)
+
+    memories = store.search("Keep the answer short.")
+
+    assert memories == [relevant]

@@ -7,9 +7,14 @@ from agent.memory.store import MemoryStore
 class InMemoryStore(MemoryStore):
     """Stores memories in memory and supports semantic search."""
 
-    def __init__(self, embedding_model: EmbeddingModel | None = None):
+    def __init__(
+        self,
+        embedding_model: EmbeddingModel | None = None,
+        similarity_threshold: float = 0.5,
+    ):
         self.memories: list[Memory] = []
         self.embedding_model = embedding_model
+        self.similarity_threshold = similarity_threshold
         self.embeddings: dict[int, list[float]] = {}
 
     def add(self, memory: Memory) -> None:
@@ -49,6 +54,12 @@ class InMemoryStore(MemoryStore):
                 memory,
             )
             for memory in self.memories
+        ]
+
+        scored_memories = [
+            (score, memory)
+            for score, memory in scored_memories
+            if score >= self.similarity_threshold
         ]
 
         scored_memories.sort(key=lambda item: item[0], reverse=True)
