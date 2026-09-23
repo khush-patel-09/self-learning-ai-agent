@@ -6,6 +6,7 @@ from agent.memory.in_memory import InMemoryStore
 from agent.memory.local_embeddings import LocalEmbeddingModel
 from agent.simple_evaluator import SimpleEvaluator
 from agent.simple_reflector import SimpleReflector
+from agent.in_memory_experience_store import InMemoryExperienceStore
 
 
 def create_agent(config: Config) -> Agent:
@@ -17,6 +18,7 @@ def create_agent(config: Config) -> Agent:
 
     embedding_model = LocalEmbeddingModel()
     memory_store = InMemoryStore(embedding_model)
+    experience_store = InMemoryExperienceStore()
 
     return Agent(
         llm,
@@ -24,4 +26,5 @@ def create_agent(config: Config) -> Agent:
         SimpleEvaluator(),
         SimpleReflector(),
         memory_store,
+        experience_store,
     )

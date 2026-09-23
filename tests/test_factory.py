@@ -2,6 +2,7 @@ from agent.config import Config
 from agent.factory import create_agent
 from agent.llm.ollama import OllamaLLM
 from agent.memory.in_memory import InMemoryStore
+from agent.in_memory_experience_store import InMemoryExperienceStore
 
 
 def test_create_agent_uses_configured_ollama(monkeypatch):
@@ -17,3 +18,10 @@ def test_create_agent_uses_configured_ollama(monkeypatch):
     assert agent.llm.base_url == "http://localhost:11434"
     assert isinstance(agent.memory_store, InMemoryStore)
     assert agent.memory_store.embedding_model is not None
+
+def test_factory_creates_experience_store():
+    config = Config()
+
+    agent = create_agent(config)
+
+    assert isinstance(agent.experience_store, InMemoryExperienceStore)
