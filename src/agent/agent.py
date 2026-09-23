@@ -10,6 +10,7 @@ from agent.experience import Experience
 from agent.task import Task
 from agent.memory.memory import Memory
 from agent.reflector import Reflector
+from agent.experience_store import ExperienceStore
 
 
 class Agent:
@@ -22,12 +23,14 @@ class Agent:
         evaluator: Evaluator,
         reflector: Reflector,
         memory_store: MemoryStore | None = None,
+        experience_store: ExperienceStore | None = None,
     ):
         self.llm = llm
         self.context_builder = context_builder
         self.evaluator = evaluator
         self.reflector = reflector
         self.memory_store = memory_store
+        self.experience_store = experience_store
 
     def run(self, task: Task, conversation: Conversation) -> AgentResult:
         """Process a task using the conversation and memory context."""
@@ -58,6 +61,9 @@ class Agent:
         )
 
         reflection = self.reflector.reflect(experience)
+        
+        if self.experience_store is not None:
+            self.experience_store.add(experience)
 
         return AgentResult(
             response,

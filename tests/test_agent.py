@@ -13,6 +13,7 @@ from agent.simple_reflector import SimpleReflector
 from agent.task import Task
 from agent.reflection import Reflection
 from agent.reflector import Reflector
+from agent.in_memory_experience_store import InMemoryExperienceStore
 
 
 def test_agent_runs_task_using_llm():
@@ -211,3 +212,27 @@ def test_agent_uses_injected_reflector():
 
     assert reflector.called is True
     assert result.reflection.insight == "Test reflection insight."
+
+def test_agent_stores_experience():
+    llm = FakeLLM("4")
+    experience_store = InMemoryExperienceStore()
+
+    agent = Agent(
+        llm,
+        ContextBuilder(),
+        SimpleEvaluator(),
+        SimpleReflector(),
+        experience_store=experience_store,
+    )
+
+    agent.run(
+        Task("Calculate 2 + 2"),
+        Conversation(),
+    )
+
+    experiences = experience_store.get_all()
+
+    assert len(experiences) == 1
+    assert experiences[0].task.description == "Calculate 2 + 2"
+    assert experiences[0].action.input == "4"
+    assert experiences[0].evaluation.success is True
