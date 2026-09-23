@@ -11,6 +11,8 @@ from agent.result import AgentResult
 from agent.simple_evaluator import SimpleEvaluator
 from agent.simple_reflector import SimpleReflector
 from agent.task import Task
+from agent.reflection import Reflection
+from agent.reflector import Reflector
 
 
 def test_agent_runs_task_using_llm():
@@ -180,3 +182,32 @@ def test_agent_uses_injected_evaluator():
     assert evaluator.called is True
     assert result.evaluation.success is False
     assert result.evaluation.feedback == "Test evaluator feedback."
+
+def test_agent_uses_injected_reflector():
+    class TestReflector(Reflector):
+        def __init__(self):
+            self.called = False
+
+        def reflect(self, experience):
+            self.called = True
+            return Reflection(
+                "Test reflection insight.",
+            )
+
+    llm = FakeLLM("4")
+    reflector = TestReflector()
+
+    agent = Agent(
+        llm,
+        ContextBuilder(),
+        SimpleEvaluator(),
+        reflector,
+    )
+
+    result = agent.run(
+        Task("Calculate 2 + 2"),
+        Conversation(),
+    )
+
+    assert reflector.called is True
+    assert result.reflection.insight == "Test reflection insight."
