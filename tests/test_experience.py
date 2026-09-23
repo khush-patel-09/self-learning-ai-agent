@@ -9,7 +9,10 @@ def test_experience_stores_components():
     task = Task("Calculate 2 + 2")
     action = Action("answer", "4")
     observation = Observation("Correct")
-    evaluation = Evaluation(True)
+    evaluation = Evaluation(
+        True,
+        "The answer was correct.",
+    )
 
     experience = Experience(
         task,
