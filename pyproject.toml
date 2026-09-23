@@ -5,6 +5,7 @@ description = "An experimental AI agent that learns from experience."
 requires-python = ">=3.11"
 dependencies = [
     "python-dotenv>=1.0.0",
+    "sentence-transformers>=3.0.0",
 ]
 
 [tool.setuptools.packages.find]
