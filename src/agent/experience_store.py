@@ -15,3 +15,8 @@ class ExperienceStore(ABC):
     def get_all(self) -> list[Experience]:
         """Return all stored experiences."""
         raise NotImplementedError
+
+    @abstractmethod
+    def search(self, query: str) -> list[Experience]:
+        """Return experiences relevant to a query."""
+        raise NotImplementedError

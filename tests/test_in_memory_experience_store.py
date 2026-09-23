@@ -2,6 +2,7 @@ from agent.action import Action
 from agent.evaluation import Evaluation
 from agent.experience import Experience
 from agent.in_memory_experience_store import InMemoryExperienceStore
+from agent.memory.local_embeddings import LocalEmbeddingModel
 from agent.observation import Observation
 from agent.task import Task
 
@@ -40,3 +41,26 @@ def test_experience_store_returns_copy():
     experiences.clear()
 
     assert len(store.get_all()) == 1
+
+
+def test_experience_store_finds_semantically_relevant_experience():
+    embedding_model = LocalEmbeddingModel()
+    store = InMemoryExperienceStore(
+        embedding_model,
+        similarity_threshold=0.3,
+    )
+
+    experience = Experience(
+        Task("Calculate 2 + 2"),
+        Action("answer", "4"),
+        Observation("4"),
+        Evaluation(True, "The answer was correct."),
+    )
+
+    store.add(experience)
+
+    results = store.search(
+        "Solve a simple arithmetic calculation."
+    )
+
+    assert experience in results
