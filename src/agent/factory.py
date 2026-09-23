@@ -4,6 +4,7 @@ from agent.context.builder import ContextBuilder
 from agent.llm.ollama import OllamaLLM
 from agent.memory.in_memory import InMemoryStore
 from agent.memory.local_embeddings import LocalEmbeddingModel
+from agent.simple_evaluator import SimpleEvaluator
 
 
 def create_agent(config: Config) -> Agent:
@@ -19,5 +20,6 @@ def create_agent(config: Config) -> Agent:
     return Agent(
         llm,
         ContextBuilder(),
+        SimpleEvaluator(),
         memory_store,
     )

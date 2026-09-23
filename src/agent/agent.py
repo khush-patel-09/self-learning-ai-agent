@@ -4,9 +4,9 @@ from agent.conversation import Conversation
 from agent.llm.base import LLM
 from agent.memory.store import MemoryStore
 from agent.observation import Observation
+from agent.evaluator import Evaluator
 from agent.result import AgentResult
 from agent.task import Task
-from agent.evaluation import Evaluation
 from agent.memory.memory import Memory
 
 
@@ -17,10 +17,12 @@ class Agent:
         self,
         llm: LLM,
         context_builder: ContextBuilder,
+        evaluator: Evaluator,
         memory_store: MemoryStore | None = None,
     ):
         self.llm = llm
         self.context_builder = context_builder
+        self.evaluator = evaluator
         self.memory_store = memory_store
 
     def run(self, task: Task, conversation: Conversation) -> AgentResult:
@@ -38,9 +40,10 @@ class Agent:
         action = Action("respond", response)
         observation = Observation(response)
 
-        evaluation = Evaluation(
-            True,
-            "The agent produced a response.",
+        evaluation = self.evaluator.evaluate(
+            task,
+            action,
+            observation,
         )
 
         return AgentResult(

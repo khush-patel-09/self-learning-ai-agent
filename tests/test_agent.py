@@ -9,11 +9,12 @@ from agent.memory.in_memory import InMemoryStore
 from agent.memory.memory import Memory
 from agent.memory.local_embeddings import LocalEmbeddingModel
 from agent.memory.similarity import cosine_similarity
+from agent.simple_evaluator import SimpleEvaluator
 
 
 def test_agent_runs_task_using_llm():
     llm = FakeLLM("4")
-    agent = Agent(llm, ContextBuilder())
+    agent = Agent(llm, ContextBuilder(), SimpleEvaluator())
     task = Task("Calculate 2 + 2")
     conversation = Conversation()
 
@@ -28,7 +29,7 @@ def test_agent_runs_task_using_llm():
 
 def test_agent_passes_conversation_to_llm():
     llm = FakeLLM("response")
-    agent = Agent(llm, ContextBuilder())
+    agent = Agent(llm, ContextBuilder(), SimpleEvaluator())
 
     conversation = Conversation()
     conversation.add("user", "My name is Khush.")
@@ -45,7 +46,7 @@ def test_agent_passes_conversation_to_llm():
 
 def test_agent_adds_response_to_conversation():
     llm = FakeLLM("4")
-    agent = Agent(llm, ContextBuilder())
+    agent = Agent(llm, ContextBuilder(), SimpleEvaluator())
 
     conversation = Conversation()
     task = Task("Calculate 2 + 2")
@@ -63,7 +64,12 @@ def test_agent_uses_memory_store():
 
     memory_store.add(Memory("The user prefers concise explanations."))
 
-    agent = Agent(llm, context_builder, memory_store)
+    agent = Agent(
+        llm,
+        context_builder,
+        SimpleEvaluator(),
+        memory_store,
+    )
 
     task = Task("Give a concise explanation.")
     conversation = Conversation()
@@ -77,7 +83,12 @@ def test_agent_can_store_memory():
     context_builder = ContextBuilder()
     memory_store = InMemoryStore()
 
-    agent = Agent(llm, context_builder, memory_store)
+    agent = Agent(
+        llm,
+        context_builder,
+        SimpleEvaluator(),
+        memory_store,
+    )
 
     agent.remember("The user prefers concise explanations.")
 
@@ -100,7 +111,12 @@ def test_agent_includes_semantically_relevant_memory():
         Memory("The user prefers concise explanations.")
     )
 
-    agent = Agent(llm, context_builder, memory_store)
+    agent = Agent(
+        llm,
+        context_builder,
+        SimpleEvaluator(),
+        memory_store,
+    )
 
     task = Task("Please keep the explanation concise.")
     conversation = Conversation()
