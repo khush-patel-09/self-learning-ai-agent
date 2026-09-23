@@ -1,6 +1,7 @@
 from agent.config import Config
 from agent.factory import create_agent
 from agent.llm.ollama import OllamaLLM
+from agent.memory.in_memory import InMemoryStore
 
 
 def test_create_agent_uses_configured_ollama(monkeypatch):
@@ -14,3 +15,5 @@ def test_create_agent_uses_configured_ollama(monkeypatch):
     assert isinstance(agent.llm, OllamaLLM)
     assert agent.llm.model == "qwen3:4b"
     assert agent.llm.base_url == "http://localhost:11434"
+    assert isinstance(agent.memory_store, InMemoryStore)
+    assert agent.memory_store.embedding_model is not None
