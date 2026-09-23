@@ -6,8 +6,10 @@ from agent.memory.store import MemoryStore
 from agent.observation import Observation
 from agent.evaluator import Evaluator
 from agent.result import AgentResult
+from agent.experience import Experience
 from agent.task import Task
 from agent.memory.memory import Memory
+from agent.reflector import Reflector
 
 
 class Agent:
@@ -18,11 +20,13 @@ class Agent:
         llm: LLM,
         context_builder: ContextBuilder,
         evaluator: Evaluator,
+        reflector: Reflector,
         memory_store: MemoryStore | None = None,
     ):
         self.llm = llm
         self.context_builder = context_builder
         self.evaluator = evaluator
+        self.reflector = reflector
         self.memory_store = memory_store
 
     def run(self, task: Task, conversation: Conversation) -> AgentResult:
@@ -46,11 +50,21 @@ class Agent:
             observation,
         )
 
+        experience = Experience(
+            task,
+            action,
+            observation,
+            evaluation,
+        )
+
+        reflection = self.reflector.reflect(experience)
+
         return AgentResult(
             response,
             action,
             observation,
             evaluation,
+            reflection,
         )
 
     def remember(self, content: str) -> None:

@@ -1,22 +1,26 @@
-from agent import result
 from agent.agent import Agent
 from agent.conversation import Conversation
-from agent.llm.fake import FakeLLM
-from agent.task import Task
 from agent.context.builder import ContextBuilder
-from agent.result import AgentResult
-from agent.memory.in_memory import InMemoryStore
-from agent.memory.memory import Memory
-from agent.memory.local_embeddings import LocalEmbeddingModel
-from agent.memory.similarity import cosine_similarity
-from agent.simple_evaluator import SimpleEvaluator
 from agent.evaluation import Evaluation
 from agent.evaluator import Evaluator
+from agent.llm.fake import FakeLLM
+from agent.memory.in_memory import InMemoryStore
+from agent.memory.local_embeddings import LocalEmbeddingModel
+from agent.memory.memory import Memory
+from agent.result import AgentResult
+from agent.simple_evaluator import SimpleEvaluator
+from agent.simple_reflector import SimpleReflector
+from agent.task import Task
 
 
 def test_agent_runs_task_using_llm():
     llm = FakeLLM("4")
-    agent = Agent(llm, ContextBuilder(), SimpleEvaluator())
+    agent = Agent(
+        llm,
+        ContextBuilder(),
+        SimpleEvaluator(),
+        SimpleReflector(),
+    )
     task = Task("Calculate 2 + 2")
     conversation = Conversation()
 
@@ -31,7 +35,12 @@ def test_agent_runs_task_using_llm():
 
 def test_agent_passes_conversation_to_llm():
     llm = FakeLLM("response")
-    agent = Agent(llm, ContextBuilder(), SimpleEvaluator())
+    agent = Agent(
+        llm,
+        ContextBuilder(),
+        SimpleEvaluator(),
+        SimpleReflector(),
+    )
 
     conversation = Conversation()
     conversation.add("user", "My name is Khush.")
@@ -48,7 +57,12 @@ def test_agent_passes_conversation_to_llm():
 
 def test_agent_adds_response_to_conversation():
     llm = FakeLLM("4")
-    agent = Agent(llm, ContextBuilder(), SimpleEvaluator())
+    agent = Agent(
+        llm,
+        ContextBuilder(),
+        SimpleEvaluator(),
+        SimpleReflector(),
+    )
 
     conversation = Conversation()
     task = Task("Calculate 2 + 2")
@@ -59,17 +73,21 @@ def test_agent_adds_response_to_conversation():
     assert conversation.messages[0].role == "assistant"
     assert conversation.messages[0].content == "4"
 
+
 def test_agent_uses_memory_store():
     llm = FakeLLM("4")
     context_builder = ContextBuilder()
     memory_store = InMemoryStore()
 
-    memory_store.add(Memory("The user prefers concise explanations."))
+    memory_store.add(
+        Memory("The user prefers concise explanations.")
+    )
 
     agent = Agent(
         llm,
         context_builder,
         SimpleEvaluator(),
+        SimpleReflector(),
         memory_store,
     )
 
@@ -80,6 +98,7 @@ def test_agent_uses_memory_store():
 
     assert "The user prefers concise explanations." in llm.last_prompt
 
+
 def test_agent_can_store_memory():
     llm = FakeLLM("4")
     context_builder = ContextBuilder()
@@ -89,6 +108,7 @@ def test_agent_can_store_memory():
         llm,
         context_builder,
         SimpleEvaluator(),
+        SimpleReflector(),
         memory_store,
     )
 
@@ -98,6 +118,7 @@ def test_agent_can_store_memory():
 
     assert len(memories) == 1
     assert memories[0].content == "The user prefers concise explanations."
+
 
 def test_agent_includes_semantically_relevant_memory():
     llm = FakeLLM("4")
@@ -117,6 +138,7 @@ def test_agent_includes_semantically_relevant_memory():
         llm,
         context_builder,
         SimpleEvaluator(),
+        SimpleReflector(),
         memory_store,
     )
 
@@ -126,6 +148,7 @@ def test_agent_includes_semantically_relevant_memory():
     agent.run(task, conversation)
 
     assert "The user prefers concise explanations." in llm.last_prompt
+
 
 def test_agent_uses_injected_evaluator():
     class TestEvaluator(Evaluator):
@@ -141,10 +164,12 @@ def test_agent_uses_injected_evaluator():
 
     llm = FakeLLM("4")
     evaluator = TestEvaluator()
+
     agent = Agent(
         llm,
         ContextBuilder(),
         evaluator,
+        SimpleReflector(),
     )
 
     result = agent.run(
