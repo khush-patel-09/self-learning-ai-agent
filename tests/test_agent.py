@@ -10,6 +10,8 @@ from agent.memory.memory import Memory
 from agent.memory.local_embeddings import LocalEmbeddingModel
 from agent.memory.similarity import cosine_similarity
 from agent.simple_evaluator import SimpleEvaluator
+from agent.evaluation import Evaluation
+from agent.evaluator import Evaluator
 
 
 def test_agent_runs_task_using_llm():
@@ -124,3 +126,32 @@ def test_agent_includes_semantically_relevant_memory():
     agent.run(task, conversation)
 
     assert "The user prefers concise explanations." in llm.last_prompt
+
+def test_agent_uses_injected_evaluator():
+    class TestEvaluator(Evaluator):
+        def __init__(self):
+            self.called = False
+
+        def evaluate(self, task, action, observation):
+            self.called = True
+            return Evaluation(
+                False,
+                "Test evaluator feedback.",
+            )
+
+    llm = FakeLLM("4")
+    evaluator = TestEvaluator()
+    agent = Agent(
+        llm,
+        ContextBuilder(),
+        evaluator,
+    )
+
+    result = agent.run(
+        Task("Calculate 2 + 2"),
+        Conversation(),
+    )
+
+    assert evaluator.called is True
+    assert result.evaluation.success is False
+    assert result.evaluation.feedback == "Test evaluator feedback."
