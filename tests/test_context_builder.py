@@ -3,6 +3,12 @@ from agent.conversation import Conversation
 from agent.task import Task
 from agent.memory.in_memory import InMemoryStore
 from agent.memory.memory import Memory
+from agent.evaluation import Evaluation
+from agent.experience import Experience
+from agent.in_memory_experience_store import InMemoryExperienceStore
+from agent.memory.local_embeddings import LocalEmbeddingModel
+from agent.action import Action
+from agent.observation import Observation
 
 
 def test_context_builder_builds_prompt():
@@ -37,3 +43,36 @@ def test_context_builder_includes_relevant_memories():
 
     assert "relevant memories:" in context
     assert "The user prefers concise explanations." in context
+
+def test_context_builder_includes_relevant_experiences():
+    builder = ContextBuilder()
+    conversation = Conversation()
+
+    experience_store = InMemoryExperienceStore(
+        LocalEmbeddingModel(),
+        similarity_threshold=0.3,
+    )
+
+    experience = Experience(
+        Task("Calculate 2 + 2"),
+        Action("answer", "4"),
+        Observation("4"),
+        Evaluation(
+            True,
+            "The answer was correct.",
+        ),
+    )
+
+    experience_store.add(experience)
+
+    task = Task("Solve a simple arithmetic calculation.")
+
+    context = builder.build(
+        task,
+        conversation,
+        experience_store=experience_store,
+    )
+
+    assert "relevant experiences:" in context
+    assert "Calculate 2 + 2" in context
+    assert "The answer was correct." in context
