@@ -332,3 +332,40 @@ def test_agent_reuses_learned_reflection_for_similar_task():
 
     assert "relevant experiences:" in second_llm.last_prompt
     assert "The approach produced a successful outcome:" in second_llm.last_prompt
+
+def test_agent_retrieves_semantically_similar_experience():
+    embedding_model = LocalEmbeddingModel()
+    experience_store = InMemoryExperienceStore(embedding_model)
+
+    experience = Experience(
+        Task("Calculate the sum of two numbers"),
+        Action("answer", "4"),
+        Observation("4"),
+        Evaluation(
+            True,
+            "The calculation was correct.",
+        ),
+        Reflection(
+            "Direct arithmetic produced the correct result.",
+        ),
+    )
+
+    experience_store.add(experience)
+
+    llm = FakeLLM("5")
+
+    agent = Agent(
+        llm,
+        ContextBuilder(),
+        SimpleEvaluator(),
+        SimpleReflector(),
+        experience_store=experience_store,
+    )
+
+    agent.run(
+        Task("What is the result when adding two values?"),
+        Conversation(),
+    )
+
+    assert "relevant experiences:" in llm.last_prompt
+    assert "Direct arithmetic produced the correct result." in llm.last_prompt
