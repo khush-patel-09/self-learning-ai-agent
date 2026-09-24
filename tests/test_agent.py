@@ -295,7 +295,8 @@ def test_agent_stores_reflection_with_experience():
     assert len(experiences) == 1
     assert experiences[0].reflection is not None
     assert experiences[0].reflection.insight == (
-        "The approach produced a successful outcome: "
+        "For the task 'Calculate 2 + 2', "
+        "the approach produced a successful outcome: "
         "The agent produced an observable result."
     )
 
@@ -331,7 +332,7 @@ def test_agent_reuses_learned_reflection_for_similar_task():
     )
 
     assert "relevant experiences:" in second_llm.last_prompt
-    assert "The approach produced a successful outcome:" in second_llm.last_prompt
+    assert "For the task 'Calculate 2 + 2', " in second_llm.last_prompt
 
 def test_agent_retrieves_semantically_similar_experience():
     embedding_model = LocalEmbeddingModel()

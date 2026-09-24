@@ -9,12 +9,14 @@ class SimpleReflector(Reflector):
     def reflect(self, experience: Experience) -> Reflection:
         if experience.evaluation.success:
             insight = (
-                "The approach produced a successful outcome: "
+                f"For the task '{experience.task.description}', "
+                f"the approach produced a successful outcome: "
                 f"{experience.evaluation.feedback}"
             )
         else:
             insight = (
-                "The approach should be improved: "
+                f"For the task '{experience.task.description}', "
+                f"the approach should be improved: "
                 f"{experience.evaluation.feedback}"
             )
 
