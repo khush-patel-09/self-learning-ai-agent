@@ -272,3 +272,29 @@ def test_agent_includes_relevant_experience_in_context():
     assert "relevant experiences:" in llm.last_prompt
     assert "Calculate 2 + 2" in llm.last_prompt
     assert "The answer was correct." in llm.last_prompt
+
+def test_agent_stores_reflection_with_experience():
+    llm = FakeLLM("4")
+    experience_store = InMemoryExperienceStore()
+
+    agent = Agent(
+        llm,
+        ContextBuilder(),
+        SimpleEvaluator(),
+        SimpleReflector(),
+        experience_store=experience_store,
+    )
+
+    agent.run(
+        Task("Calculate 2 + 2"),
+        Conversation(),
+    )
+
+    experiences = experience_store.get_all()
+
+    assert len(experiences) == 1
+    assert experiences[0].reflection is not None
+    assert experiences[0].reflection.insight == (
+        "The approach produced a successful outcome: "
+        "The agent produced an observable result."
+    )

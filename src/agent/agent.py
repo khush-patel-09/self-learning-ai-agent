@@ -62,6 +62,7 @@ class Agent:
         )
 
         reflection = self.reflector.reflect(experience)
+        experience.reflection = reflection
 
         if self.experience_store is not None:
             self.experience_store.add(experience)
