@@ -298,3 +298,37 @@ def test_agent_stores_reflection_with_experience():
         "The approach produced a successful outcome: "
         "The agent produced an observable result."
     )
+
+def test_agent_reuses_learned_reflection_for_similar_task():
+    experience_store = InMemoryExperienceStore()
+
+    first_llm = FakeLLM("4")
+    first_agent = Agent(
+        first_llm,
+        ContextBuilder(),
+        SimpleEvaluator(),
+        SimpleReflector(),
+        experience_store=experience_store,
+    )
+
+    first_agent.run(
+        Task("Calculate 2 + 2"),
+        Conversation(),
+    )
+
+    second_llm = FakeLLM("5")
+    second_agent = Agent(
+        second_llm,
+        ContextBuilder(),
+        SimpleEvaluator(),
+        SimpleReflector(),
+        experience_store=experience_store,
+    )
+
+    second_agent.run(
+        Task("Calculate 2 + 2"),
+        Conversation(),
+    )
+
+    assert "relevant experiences:" in second_llm.last_prompt
+    assert "The approach produced a successful outcome:" in second_llm.last_prompt
