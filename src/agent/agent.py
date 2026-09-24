@@ -38,6 +38,7 @@ class Agent:
             task,
             conversation,
             self.memory_store,
+            self.experience_store,
         )
 
         response = self.llm.generate(prompt)
@@ -61,7 +62,7 @@ class Agent:
         )
 
         reflection = self.reflector.reflect(experience)
-        
+
         if self.experience_store is not None:
             self.experience_store.add(experience)
 

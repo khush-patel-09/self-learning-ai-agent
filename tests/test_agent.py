@@ -1,19 +1,22 @@
+from agent.action import Action
 from agent.agent import Agent
-from agent.conversation import Conversation
 from agent.context.builder import ContextBuilder
+from agent.conversation import Conversation
 from agent.evaluation import Evaluation
 from agent.evaluator import Evaluator
+from agent.experience import Experience
 from agent.llm.fake import FakeLLM
 from agent.memory.in_memory import InMemoryStore
 from agent.memory.local_embeddings import LocalEmbeddingModel
 from agent.memory.memory import Memory
+from agent.in_memory_experience_store import InMemoryExperienceStore
+from agent.observation import Observation
+from agent.reflection import Reflection
+from agent.reflector import Reflector
 from agent.result import AgentResult
 from agent.simple_evaluator import SimpleEvaluator
 from agent.simple_reflector import SimpleReflector
 from agent.task import Task
-from agent.reflection import Reflection
-from agent.reflector import Reflector
-from agent.in_memory_experience_store import InMemoryExperienceStore
 
 
 def test_agent_runs_task_using_llm():
@@ -236,3 +239,36 @@ def test_agent_stores_experience():
     assert experiences[0].task.description == "Calculate 2 + 2"
     assert experiences[0].action.input == "4"
     assert experiences[0].evaluation.success is True
+
+def test_agent_includes_relevant_experience_in_context():
+    llm = FakeLLM("4")
+    experience_store = InMemoryExperienceStore()
+
+    experience = Experience(
+        Task("Calculate 2 + 2"),
+        Action("answer", "4"),
+        Observation("4"),
+        Evaluation(
+            True,
+            "The answer was correct.",
+        ),
+    )
+
+    experience_store.add(experience)
+
+    agent = Agent(
+        llm,
+        ContextBuilder(),
+        SimpleEvaluator(),
+        SimpleReflector(),
+        experience_store=experience_store,
+    )
+
+    agent.run(
+        Task("Calculate 2+2"),
+        Conversation(),
+    )
+
+    assert "relevant experiences:" in llm.last_prompt
+    assert "Calculate 2 + 2" in llm.last_prompt
+    assert "The answer was correct." in llm.last_prompt
