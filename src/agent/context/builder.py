@@ -37,7 +37,7 @@ class ContextBuilder:
                 messages.append("relevant experiences:")
                 messages.extend(
                     f"- {experience.task.description}: "
-                    f"{experience.evaluation.feedback}"
+                    f"{experience.reflection.insight if experience.reflection else experience.evaluation.feedback}"
                     for experience in experiences
                 )
 
