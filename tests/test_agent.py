@@ -405,7 +405,10 @@ def test_agent_includes_outcome_and_reflection_in_experience_context():
         Conversation(),
     )
 
-    assert "The answer was correct." in llm.last_prompt
+    assert (
+        "outcome: success - The answer was correct."
+        in llm.last_prompt
+    )
     assert (
         "For the task 'Calculate 2 + 2', "
         "the approach produced the correct result."

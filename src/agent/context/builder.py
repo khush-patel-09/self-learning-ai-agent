@@ -40,8 +40,10 @@ class ContextBuilder:
                     messages.append(
                         f"- task: {experience.task.description}"
                     )
+                    outcome = "success" if experience.evaluation.success else "failure"
+
                     messages.append(
-                        f"  outcome: {experience.evaluation.feedback}"
+                        f"  outcome: {outcome} - {experience.evaluation.feedback}"
                     )
 
                     if experience.reflection is not None:
