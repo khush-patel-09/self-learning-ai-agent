@@ -18,7 +18,7 @@ def create_agent(config: Config) -> Agent:
 
     embedding_model = LocalEmbeddingModel()
     memory_store = InMemoryStore(embedding_model)
-    experience_store = InMemoryExperienceStore()
+    experience_store = InMemoryExperienceStore(embedding_model)
 
     return Agent(
         llm,
