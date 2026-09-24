@@ -370,3 +370,43 @@ def test_agent_retrieves_semantically_similar_experience():
 
     assert "relevant experiences:" in llm.last_prompt
     assert "Direct arithmetic produced the correct result." in llm.last_prompt
+
+def test_agent_includes_outcome_and_reflection_in_experience_context():
+    experience_store = InMemoryExperienceStore()
+
+    experience = Experience(
+        Task("Calculate 2 + 2"),
+        Action("answer", "4"),
+        Observation("4"),
+        Evaluation(
+            True,
+            "The answer was correct.",
+        ),
+        Reflection(
+            "For the task 'Calculate 2 + 2', "
+            "the approach produced the correct result.",
+        ),
+    )
+
+    experience_store.add(experience)
+
+    llm = FakeLLM("4")
+
+    agent = Agent(
+        llm,
+        ContextBuilder(),
+        SimpleEvaluator(),
+        SimpleReflector(),
+        experience_store=experience_store,
+    )
+
+    agent.run(
+        Task("Calculate 2 + 2"),
+        Conversation(),
+    )
+
+    assert "The answer was correct." in llm.last_prompt
+    assert (
+        "For the task 'Calculate 2 + 2', "
+        "the approach produced the correct result."
+    ) in llm.last_prompt

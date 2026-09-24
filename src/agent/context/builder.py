@@ -1,7 +1,7 @@
 from agent.conversation import Conversation
+from agent.experience_store import ExperienceStore
 from agent.memory.store import MemoryStore
 from agent.task import Task
-from agent.experience_store import ExperienceStore
 
 
 class ContextBuilder:
@@ -14,7 +14,7 @@ class ContextBuilder:
         memory_store: MemoryStore | None = None,
         experience_store: ExperienceStore | None = None,
     ) -> str:
-        """Build an LLM prompt from conversation history, memories, and task."""
+        """Build an LLM prompt from conversation, memories, experiences, and task."""
         messages = [
             f"{message.role}: {message.content}"
             for message in conversation.messages
@@ -35,11 +35,19 @@ class ContextBuilder:
 
             if experiences:
                 messages.append("relevant experiences:")
-                messages.extend(
-                    f"- {experience.task.description}: "
-                    f"{experience.reflection.insight if experience.reflection else experience.evaluation.feedback}"
-                    for experience in experiences
-                )
+
+                for experience in experiences:
+                    messages.append(
+                        f"- task: {experience.task.description}"
+                    )
+                    messages.append(
+                        f"  outcome: {experience.evaluation.feedback}"
+                    )
+
+                    if experience.reflection is not None:
+                        messages.append(
+                            f"  learned insight: {experience.reflection.insight}"
+                        )
 
         messages.append(f"user: {task.description}")
 
