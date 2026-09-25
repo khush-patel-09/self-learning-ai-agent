@@ -6,40 +6,53 @@ The project focuses on understanding the internal mechanics of a learning agent 
 
 ## Architecture
 
-                         ┌──────────────┐
-                         │     LLM      │
-                         │    Ollama    │
-                         └──────┬───────┘
-                                │
-                                ▼
-User → Agent → Context Builder → Response
-          │
-          ├──────────────► Conversation
-          │
-          ├──────────────► Semantic Memory
-          │
-          └──────────────► Experience Memory
-                                  │
-                                  ▼
-                              Evaluation
-                                  │
-                                  ▼
-                              Reflection
-                                  │
-                                  ▼
-                         Stored Experience
-                                  │
-                                  ▼
-                      Semantic Experience Search
-                                  │
-                                  ▼
-                       Learned Insight Retrieved
-                                  │
-                                  ▼
-                         Future Similar Task
+```text
+                     ┌──────────────┐
+                     │     LLM      │
+                     │    Ollama    │
+                     └──────┬───────┘
+                            │
+                            ▼
+              ┌──────────────────────────┐
+              │          Agent           │
+              └────────────┬─────────────┘
+                           │
+                           ▼
+                   Context Builder
+                           │
+                           ▼
+                        Response
+                           ▲
+                           │
+              ┌────────────┴─────────────┐
+              │                          │
+        Conversation              Semantic Memory
+                                         │
+                                         ▼
+                                 Experience Memory
+                                         │
+                                         ▼
+                                    Evaluation
+                                         │
+                                         ▼
+                                    Reflection
+                                         │
+                                         ▼
+                                Stored Experience
+                                         │
+                                         ▼
+                            Semantic Experience Search
+                                         │
+                                         ▼
+                              Learned Insight Retrieved
+                                         │
+                                         ▼
+                               Future Similar Task
+```
 
-## How it learns?
+## How It Learns
 
+```text
 New Task
    ↓
 Retrieve relevant memories and experiences
@@ -61,32 +74,42 @@ Future similar task
 Retrieve previous experience
    ↓
 Reuse learned insight
+```
 
+**Memory stores information. Learning stores experience that can influence future behavior.**
 
 ## Core Components
 
-- Agent — orchestrates the complete pipeline
-- Semantic Memory — retrieves relevant stored information using embeddings
-- Experience Memory — stores and retrieves past task experiences
-- Evaluator — evaluates agent outcomes
-- Reflector — converts experiences into reusable insights
-- Context Builder — assembles relevant context for the LLM
-- Ollama — provides a local LLM without paid APIs
+- **Agent** — orchestrates the complete pipeline
+- **Semantic Memory** — retrieves relevant stored information using embeddings
+- **Experience Memory** — stores and retrieves past task experiences
+- **Evaluator** — evaluates agent outcomes
+- **Reflector** — converts experiences into reusable insights
+- **Context Builder** — assembles relevant context for the LLM
+- **Ollama** — provides a local LLM without paid APIs
 
-# Running locally
+## Running Locally
 
+```bash
 pip install -e .
 ollama pull qwen3:4b
 python3 -m pytest
+```
 
-## Configure locally
+### Configure Locally
 
+Create a `.env` file:
+
+```env
 LLM_PROVIDER=ollama
 LLM_MODEL=qwen3:4b
 LLM_BASE_URL=http://localhost:11434
+```
 
 ## Testing
 
-58 tests passing
+**58 tests passing**
+
+---
 
 Built from scratch to explore how memory, experience, reflection, and retrieval can be combined to create a learning agent.
