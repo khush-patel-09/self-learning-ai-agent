@@ -500,3 +500,39 @@ def test_agent_learns_from_previous_run():
     assert "outcome: success" in second_llm.last_prompt
     assert "learned insight:" in second_llm.last_prompt
     assert "For similar tasks" in second_llm.last_prompt
+
+def test_agent_learns_from_semantically_similar_task():
+    embedding_model = LocalEmbeddingModel()
+    experience_store = InMemoryExperienceStore(embedding_model)
+
+    first_llm = FakeLLM("4")
+    first_agent = Agent(
+        first_llm,
+        ContextBuilder(),
+        SimpleEvaluator(),
+        SimpleReflector(),
+        experience_store=experience_store,
+    )
+
+    first_agent.run(
+        Task("Calculate 2 + 2"),
+        Conversation(),
+    )
+
+    second_llm = FakeLLM("4")
+    second_agent = Agent(
+        second_llm,
+        ContextBuilder(),
+        SimpleEvaluator(),
+        SimpleReflector(),
+        experience_store=experience_store,
+    )
+
+    second_agent.run(
+        Task("What is the result when adding two values?"),
+        Conversation(),
+    )
+
+    assert "relevant experiences:" in second_llm.last_prompt
+    assert "Calculate 2 + 2" in second_llm.last_prompt
+    assert "learned insight:" in second_llm.last_prompt
