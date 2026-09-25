@@ -461,3 +461,42 @@ def test_agent_reuses_failed_experience_reflection():
         "Avoid repeating the same outcome: "
         "The agent produced an empty result."
     ) in llm.last_prompt
+
+def test_agent_learns_from_previous_run():
+    experience_store = InMemoryExperienceStore()
+
+    first_llm = FakeLLM("4")
+    first_agent = Agent(
+        first_llm,
+        ContextBuilder(),
+        SimpleEvaluator(),
+        SimpleReflector(),
+        experience_store=experience_store,
+    )
+
+    first_agent.run(
+        Task("Calculate 2 + 2"),
+        Conversation(),
+    )
+
+    assert len(experience_store.get_all()) == 1
+    assert experience_store.get_all()[0].reflection is not None
+
+    second_llm = FakeLLM("4")
+    second_agent = Agent(
+        second_llm,
+        ContextBuilder(),
+        SimpleEvaluator(),
+        SimpleReflector(),
+        experience_store=experience_store,
+    )
+
+    second_agent.run(
+        Task("Calculate 2 + 2"),
+        Conversation(),
+    )
+
+    assert "relevant experiences:" in second_llm.last_prompt
+    assert "outcome: success" in second_llm.last_prompt
+    assert "learned insight:" in second_llm.last_prompt
+    assert "For similar tasks" in second_llm.last_prompt
