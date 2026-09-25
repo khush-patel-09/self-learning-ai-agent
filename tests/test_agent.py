@@ -413,3 +413,44 @@ def test_agent_includes_outcome_and_reflection_in_experience_context():
         "For the task 'Calculate 2 + 2', "
         "the approach produced the correct result."
     ) in llm.last_prompt
+
+def test_agent_reuses_failed_experience_reflection():
+    experience_store = InMemoryExperienceStore()
+
+    experience = Experience(
+        Task("Calculate 2 + 2"),
+        Action("answer", ""),
+        Observation(""),
+        Evaluation(
+            False,
+            "The agent produced an empty result.",
+        ),
+        Reflection(
+            "For the task 'Calculate 2 + 2', "
+            "the approach should be improved: "
+            "The agent produced an empty result.",
+        ),
+    )
+
+    experience_store.add(experience)
+
+    llm = FakeLLM("4")
+
+    agent = Agent(
+        llm,
+        ContextBuilder(),
+        SimpleEvaluator(),
+        SimpleReflector(),
+        experience_store=experience_store,
+    )
+
+    agent.run(
+        Task("Calculate 2 + 2"),
+        Conversation(),
+    )
+
+    assert "outcome: failure" in llm.last_prompt
+    assert (
+        "the approach should be improved: "
+        "The agent produced an empty result."
+    ) in llm.last_prompt
