@@ -536,3 +536,44 @@ def test_agent_learns_from_semantically_similar_task():
     assert "relevant experiences:" in second_llm.last_prompt
     assert "Calculate 2 + 2" in second_llm.last_prompt
     assert "learned insight:" in second_llm.last_prompt
+
+def test_agent_completes_full_learning_cycle():
+    embedding_model = LocalEmbeddingModel()
+    experience_store = InMemoryExperienceStore(embedding_model)
+
+    first_llm = FakeLLM("4")
+    first_agent = Agent(
+        first_llm,
+        ContextBuilder(),
+        SimpleEvaluator(),
+        SimpleReflector(),
+        experience_store=experience_store,
+    )
+
+    first_result = first_agent.run(
+        Task("Calculate 2 + 2"),
+        Conversation(),
+    )
+
+    assert first_result.evaluation.success
+    assert first_result.reflection is not None
+    assert len(experience_store.get_all()) == 1
+
+    second_llm = FakeLLM("4")
+    second_agent = Agent(
+        second_llm,
+        ContextBuilder(),
+        SimpleEvaluator(),
+        SimpleReflector(),
+        experience_store=experience_store,
+    )
+
+    second_agent.run(
+        Task("What is the result when adding two values?"),
+        Conversation(),
+    )
+
+    assert "relevant experiences:" in second_llm.last_prompt
+    assert "Calculate 2 + 2" in second_llm.last_prompt
+    assert "outcome: success" in second_llm.last_prompt
+    assert "learned insight:" in second_llm.last_prompt
