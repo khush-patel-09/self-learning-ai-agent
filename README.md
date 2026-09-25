@@ -6,7 +6,6 @@ The project focuses on understanding the internal mechanics of a learning agent 
 
 ## Architecture
 
-```text
                          ┌──────────────┐
                          │     LLM      │
                          │    Ollama    │
