@@ -17,9 +17,9 @@ def test_simple_reflector_creates_success_reflection():
     reflection = SimpleReflector().reflect(experience)
 
     assert reflection.insight == (
-        "For the task 'Calculate 2 + 2', "
-        "the approach produced a successful outcome: "
-        "The agent produced an observable result."
+        "For similar tasks, the approach used for "
+        "'Calculate 2 + 2' produced a successful "
+        "outcome. The agent produced an observable result."
     )
 
 
@@ -34,7 +34,8 @@ def test_simple_reflector_creates_failure_reflection():
     reflection = SimpleReflector().reflect(experience)
 
     assert reflection.insight == (
-        "For the task 'Calculate 2 + 2', "
-        "the approach should be improved: "
+        "For similar tasks, the approach used for "
+        "'Calculate 2 + 2' should be improved. "
+        "Avoid repeating the same outcome: "
         "The agent produced an empty result."
     )
