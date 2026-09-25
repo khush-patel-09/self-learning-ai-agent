@@ -37,19 +37,7 @@ class ContextBuilder:
                 messages.append("relevant experiences:")
 
                 for experience in experiences:
-                    messages.append(
-                        f"- task: {experience.task.description}"
-                    )
-                    outcome = "success" if experience.evaluation.success else "failure"
-
-                    messages.append(
-                        f"  outcome: {outcome} - {experience.evaluation.feedback}"
-                    )
-
-                    if experience.reflection is not None:
-                        messages.append(
-                            f"  learned insight: {experience.reflection.insight}"
-                        )
+                    messages.extend(experience.to_context())
 
         messages.append(f"user: {task.description}")
 

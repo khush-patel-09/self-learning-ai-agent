@@ -21,3 +21,19 @@ class Experience:
         self.observation = observation
         self.evaluation = evaluation
         self.reflection = reflection
+
+    def to_context(self) -> list[str]:
+        """Return the experience formatted for LLM context."""
+        lines = [
+            f"- task: {self.task.description}",
+            f"  outcome: "
+            f"{'success' if self.evaluation.success else 'failure'} - "
+            f"{self.evaluation.feedback}",
+        ]
+
+        if self.reflection is not None:
+            lines.append(
+                f"  learned insight: {self.reflection.insight}"
+            )
+
+        return lines
